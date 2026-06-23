@@ -4,6 +4,28 @@
 
 ---
 
+## [Unreleased]
+
+### 新增
+
+- 考核表系統完整功能（Google OAuth 2.0 登入、Google Sheets API 整合）
+- 身分驗證流程：Google 登入 → 比對 users 工作表 → 角色授權（管理員/主管/一般）
+- 前台：指派問卷清單、問卷填寫（拖移滑桿 1-20 分 + 量化說明）、送出前預覽確認
+- 前台：我的問卷填寫紀錄查閱
+- 後台（主管以上）：所有已提交問卷瀏覽、加權分數計算結果
+- 後台（管理員限定）：已提交問卷內容編輯
+- PDF 匯出：分數結果 + 文字回饋
+- React Router 多頁路由架構
+- AuthContext：登入狀態、角色、指派問卷全域管理
+- sheetsApi.js：Google Sheets REST API 統一封裝
+- scoreCalculator.js：各問卷加權分數換算工具
+- 新增 design token：`--surface`、`--danger`、`--success`、`--slider-track`
+- 新增套件：`@react-oauth/google`、`react-router-dom`、`jspdf`、`html2canvas`
+- 未授權使用者顯示「未獲授權」頁面
+- `.env.example` 環境變數範本
+
+---
+
 ## [0.0.0] — 初始版本
 
 ### 新增
