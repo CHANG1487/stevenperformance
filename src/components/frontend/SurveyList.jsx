@@ -68,13 +68,17 @@ export default function SurveyList() {
               </div>
               <h2 className="survey-name">{survey.name}</h2>
               <p className="survey-weight">分數佔比 {Math.round(survey.weight * 100)}%</p>
-              <button
-                type="button"
-                className="btn-primary"
-                onClick={() => navigate(`/surveys/${survey.id}`)}
-              >
-                {submitted.has(survey.id) ? '重新填寫' : '開始填寫'}
-              </button>
+              {submitted.has(survey.id) ? (
+                <p className="survey-submitted-msg">已完成填寫</p>
+              ) : (
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={() => navigate(`/surveys/${survey.id}`)}
+                >
+                  開始填寫
+                </button>
+              )}
             </div>
           ))}
         </div>

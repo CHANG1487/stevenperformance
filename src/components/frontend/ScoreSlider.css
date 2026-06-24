@@ -89,6 +89,9 @@
 
 .score-description {
   display: flex;
+  align-items: flex-start;
+  height: 5rem;
+  overflow-y: auto;
   gap: 10px;
   padding: 12px;
   background: var(--accent-bg);
