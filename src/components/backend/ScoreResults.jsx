@@ -48,13 +48,13 @@ export default function ScoreResults() {
       const pageH = pdf.internal.pageSize.getHeight()
       const imgW = pageW - 20
       const imgH = (canvas.height * imgW) / canvas.width
-      let y = 10
-      let remaining = imgH
-      while (remaining > 0) {
-        const sliceH = Math.min(remaining, pageH - 20)
-        pdf.addImage(imgData, 'PNG', 10, y, imgW, imgH, '', 'FAST')
-        remaining -= sliceH
-        if (remaining > 0) { pdf.addPage(); y = 10 }
+      const pageContentH = pageH - 20
+
+      let page = 0
+      while (page * pageContentH < imgH) {
+        if (page > 0) pdf.addPage()
+        pdf.addImage(imgData, 'PNG', 10, 10 - page * pageContentH, imgW, imgH, '', 'FAST')
+        page++
       }
       pdf.save('考核分數結果.pdf')
     } catch (e) {
@@ -127,7 +127,6 @@ export default function ScoreResults() {
                 <div className="feedback-responses">
                   {f.responses.map((r, i) => (
                     <div key={i} className="feedback-item">
-                      <span className="feedback-author">{r.email}</span>
                       <p className="feedback-text">{r.text}</p>
                     </div>
                   ))}
