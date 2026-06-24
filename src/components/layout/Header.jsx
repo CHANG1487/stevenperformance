@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/useAuth'
 import './Header.css'
@@ -7,6 +8,7 @@ const ROLE_LEVEL = { '一般': 1, '主管': 2, '管理員': 3 }
 export default function Header() {
   const { user, role, logout } = useAuth()
   const navigate = useNavigate()
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleLogout = () => {
     logout()
@@ -18,8 +20,20 @@ export default function Header() {
   return (
     <header className="app-header">
       <div className="header-inner">
-        <nav className="header-nav">
+        <div className="header-left">
           <span className="header-brand">考核表系統</span>
+          <button
+            type="button"
+            className="nav-hamburger"
+            aria-label="選單"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(o => !o)}
+          >
+            {menuOpen ? '✕' : '☰'}
+          </button>
+        </div>
+
+        <nav className={`header-nav${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(false)}>
           <NavLink to="/surveys" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             填寫問卷
           </NavLink>

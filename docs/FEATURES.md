@@ -61,6 +61,14 @@ GitHub、Discord、X.com、Bluesky 四個外部連結，深色模式下圖示以
 
 ---
 
+### Header 導覽列
+
+**位置**：`src/components/layout/Header.jsx`
+
+桌面（>1024px）：水平導覽列顯示所有連結。手機（≤1024px）：隱藏導覽連結，改為漢堡按鈕（☰），點擊後展開垂直下拉選單；點選任一連結後選單自動關閉。
+
+---
+
 ### 深色模式
 
 `@media (prefers-color-scheme: dark)` 自動覆寫 `:root` 所有 CSS custom property，無需 JavaScript。
@@ -191,7 +199,7 @@ GitHub、Discord、X.com、Bluesky 四個外部連結，深色模式下圖示以
 - 總分
 - 各問卷「其他意見回饋」文字回饋列表（**匿名**，僅顯示評論內容，不顯示填寫者）
 
-**PDF 匯出**：使用 `html2canvas` + `jspdf` 將結果頁截圖後產生多頁 PDF 下載，完整涵蓋分數與文字回饋。
+PDF 匯出功能已移除。
 
 ---
 

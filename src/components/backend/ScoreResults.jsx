@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/useAuth'
 import { getSurveyList, parseSurveyList, getSurveyQuestions, parseQuestions, getSubmissions, parseSubmissions } from '../../utils/sheetsApi'
 import { calcScores, getTextFeedback } from '../../utils/scoreCalculator'
@@ -10,8 +10,6 @@ export default function ScoreResults() {
   const [feedback, setFeedback] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [pdfLoading, setPdfLoading] = useState(false)
-  const reportRef = useRef(null)
 
   useEffect(() => {
     async function load() {
@@ -36,34 +34,6 @@ export default function ScoreResults() {
     load()
   }, [accessToken])
 
-  const handleDownloadPdf = async () => {
-    setPdfLoading(true)
-    try {
-      const { default: html2canvas } = await import('html2canvas')
-      const { default: jsPDF } = await import('jspdf')
-      const canvas = await html2canvas(reportRef.current, { scale: 2, useCORS: true })
-      const imgData = canvas.toDataURL('image/png')
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-      const pageW = pdf.internal.pageSize.getWidth()
-      const pageH = pdf.internal.pageSize.getHeight()
-      const imgW = pageW - 20
-      const imgH = (canvas.height * imgW) / canvas.width
-      const pageContentH = pageH - 20
-
-      let page = 0
-      while (page * pageContentH < imgH) {
-        if (page > 0) pdf.addPage()
-        pdf.addImage(imgData, 'PNG', 10, 10 - page * pageContentH, imgW, imgH, '', 'FAST')
-        page++
-      }
-      pdf.save('考核分數結果.pdf')
-    } catch (e) {
-      alert(`PDF 產生失敗：${e.message}`)
-    } finally {
-      setPdfLoading(false)
-    }
-  }
-
   if (loading) return <div className="page-center"><span className="spinner" /></div>
   if (error) return <div className="page-center error-msg">載入失敗：{error}</div>
   if (!result) return null
@@ -72,21 +42,11 @@ export default function ScoreResults() {
 
   return (
     <main className="page-main">
-      <div className="scores-toolbar">
-        <div className="page-header" style={{ marginBottom: 0 }}>
-          <h1>分數計算結果</h1>
-        </div>
-        <button
-          type="button"
-          className="btn-primary"
-          onClick={handleDownloadPdf}
-          disabled={pdfLoading}
-        >
-          {pdfLoading ? <><span className="spinner" /> 產生中…</> : '下載 PDF'}
-        </button>
+      <div className="page-header">
+        <h1>分數計算結果</h1>
       </div>
 
-      <div ref={reportRef} className="score-report">
+      <div className="score-report">
         <div className="total-score-card">
           <div className="total-label">總分</div>
           <div className="total-number">{result.total}</div>
