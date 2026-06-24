@@ -6,6 +6,12 @@
 
 ## [Unreleased]
 
+### 修正
+
+- 登入後卡在 `/login` 頁面：`onSuccess` 非同步區塊的 `catch` 靜默 reset 不顯示錯誤，現在改為顯示具體訊息（試算表 ID 錯誤、API 未啟用等）
+- `onError` callback 現在也顯示 Google OAuth 失敗訊息（如彈出視窗被封鎖）
+- 環境變數未設定時，登入頁顯示設定提示並停用登入按鈕
+
 ### 新增
 
 - 考核表系統完整功能（Google OAuth 2.0 登入、Google Sheets API 整合）

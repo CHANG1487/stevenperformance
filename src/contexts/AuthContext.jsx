@@ -5,6 +5,20 @@ import { AuthContext } from './useAuth'
 
 const SESSION_KEYS = ['access_token', 'user_email', 'user_name', 'user_role', 'user_surveys']
 
+function parseErrorMessage(err) {
+  const msg = err?.message || ''
+  if (msg.includes('400') || msg.includes('404')) {
+    return '找不到試算表，請確認 VITE_SPREADSHEET_ID 設定正確，且試算表已共用給您的帳號。'
+  }
+  if (msg.includes('403')) {
+    return '沒有試算表存取權限，請確認 Google Sheets API 已啟用，且試算表已共用給您的帳號。'
+  }
+  if (msg.includes('401')) {
+    return 'OAuth token 失效，請重新登入。'
+  }
+  return `登入失敗：${msg || '未知錯誤，請查看 Console 取得詳細資訊。'}`
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [role, setRole] = useState(null)
@@ -12,6 +26,7 @@ export function AuthProvider({ children }) {
   const [accessToken, setAccessToken] = useState(null)
   // 'loading' | 'unauthenticated' | 'authenticated' | 'unauthorized'
   const [authState, setAuthState] = useState('loading')
+  const [loginError, setLoginError] = useState(null)
 
   useEffect(() => {
     const token = sessionStorage.getItem('access_token')
@@ -32,12 +47,14 @@ export function AuthProvider({ children }) {
     scope: 'openid email profile https://www.googleapis.com/auth/spreadsheets',
     onSuccess: async (tokenResponse) => {
       setAuthState('loading')
+      setLoginError(null)
       try {
         const token = tokenResponse.access_token
 
         const profileRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: `Bearer ${token}` },
         })
+        if (!profileRes.ok) throw new Error(`取得用戶資料失敗 (${profileRes.status})`)
         const profile = await profileRes.json()
         const email = profile.email
 
@@ -67,10 +84,15 @@ export function AuthProvider({ children }) {
         setAuthState('authenticated')
       } catch (err) {
         console.error('Login error:', err)
+        setLoginError(parseErrorMessage(err))
         setAuthState('unauthenticated')
       }
     },
-    onError: () => setAuthState('unauthenticated'),
+    onError: (err) => {
+      console.error('Google OAuth error:', err)
+      setLoginError('Google 登入失敗，請確認彈出視窗未被瀏覽器封鎖後再試一次。')
+      setAuthState('unauthenticated')
+    },
   })
 
   const logout = () => {
@@ -79,11 +101,12 @@ export function AuthProvider({ children }) {
     setUser(null)
     setRole(null)
     setAssignedSurveys([])
+    setLoginError(null)
     setAuthState('unauthenticated')
   }
 
   return (
-    <AuthContext.Provider value={{ user, role, assignedSurveys, accessToken, authState, login: googleLogin, logout }}>
+    <AuthContext.Provider value={{ user, role, assignedSurveys, accessToken, authState, loginError, login: googleLogin, logout }}>
       {children}
     </AuthContext.Provider>
   )

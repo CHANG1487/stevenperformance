@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/useAuth'
 import './LoginPage.css'
 
+const missingEnv = !import.meta.env.VITE_GOOGLE_CLIENT_ID || !import.meta.env.VITE_SPREADSHEET_ID
+
 export default function LoginPage() {
-  const { authState, login } = useAuth()
+  const { authState, loginError, login } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -24,6 +26,13 @@ export default function LoginPage() {
         <h1>考核表系統</h1>
         <p className="login-desc">請使用公司 Google 帳號登入以繼續</p>
 
+        {missingEnv && (
+          <div className="login-warning">
+            ⚠️ 尚未設定環境變數，請建立 <code>.env</code> 檔案並填入
+            <code>VITE_GOOGLE_CLIENT_ID</code> 和 <code>VITE_SPREADSHEET_ID</code>。
+          </div>
+        )}
+
         {authState === 'loading' && (
           <div className="login-loading">
             <span className="spinner" />
@@ -32,7 +41,7 @@ export default function LoginPage() {
         )}
 
         {authState !== 'loading' && (
-          <button className="google-btn" type="button" onClick={() => login()}>
+          <button className="google-btn" type="button" onClick={() => login()} disabled={missingEnv}>
             <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -41,6 +50,12 @@ export default function LoginPage() {
             </svg>
             以 Google 帳號登入
           </button>
+        )}
+
+        {loginError && (
+          <div className="login-error" role="alert">
+            {loginError}
+          </div>
         )}
       </div>
     </div>

@@ -88,11 +88,16 @@ GitHub、Discord、X.com、Bluesky 四個外部連結，深色模式下圖示以
 
 **行為**：
 - 頁面顯示一個「以 Google 帳戶登入」按鈕
+- 若 `.env` 中 `VITE_GOOGLE_CLIENT_ID` 或 `VITE_SPREADSHEET_ID` 任一未設定 → 顯示設定提示，登入按鈕 disabled
 - 點擊後開啟 Google 帳號選擇器
 - 登入成功取得 `access_token`，存入 sessionStorage（頁面關閉自動清除）
-- 登入失敗或取消 → 停留登入頁，顯示錯誤提示
+- 登入失敗 → 在卡片下方顯示具體錯誤訊息（`loginError` state）：
+  - `403`：沒有試算表存取權限（Sheets API 未啟用或未共用試算表）
+  - `404`：試算表 ID 錯誤
+  - OAuth 失敗：提示彈出視窗被封鎖
+- Google OAuth 錯誤（`onError`）→ 同樣顯示錯誤訊息
 
-**所需環境變數**：`VITE_GOOGLE_CLIENT_ID`（Google Cloud Console OAuth 2.0 用戶端 ID）
+**所需環境變數**：`VITE_GOOGLE_CLIENT_ID`（OAuth 2.0 Web application 用戶端 ID）、`VITE_SPREADSHEET_ID`
 
 ---
 
