@@ -16,7 +16,6 @@ export default function ScoreSlider({ question, quantitativeMap, value, onChange
     <div className="score-slider">
       <div className="score-display">
         <span className="score-number">{value} 分</span>
-        <span className="score-range-label">{rangeKey}</span>
       </div>
 
       <div className="slider-track-wrap">
@@ -45,7 +44,6 @@ export default function ScoreSlider({ question, quantitativeMap, value, onChange
 
       {description && (
         <div className="score-description">
-          <span className="code-chip">{codeKey}</span>
           <p>{description}</p>
         </div>
       )}
